@@ -1,13 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <!-- <script src="index.js" defer type="module"></script> -->
-</head>
-<body>
-
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Zuma</title>
+        <link rel="icon" type="image/x-icon" href="favicon.ico" />
+        <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div class="shadow"></div>
+        <div class="github">
+            <a href="https://https://github.com/SergeyIvanov85/ITAcademy_final_project" target="blank">&lt;&gt;</a>
+        </div>
+        <div class="score">
+            <div class="title">ОЧКИ</div>
+            <div id="score" class="num">0</div>
+        </div>
+        <div class="popup-container">
+            <div id="start-popup" class="popup active">
+                <div class="title">ПРИВЕТ !</div>
+                <div class="info">
+                    <ul class="mobile-hode">
+                        <li>ЛЕВЫЙ КЛИК ДЛЯ ВЫСТРЕЛА ШАРИКОМ</li>
+                        <li>НАЖМИТЕ ПРОБЕЛ ДЛЯ СМЕНЫ ЦВЕТА ШАРИКА</li>
+                        <li>НАЖМИТЕ "ESC" ДЛЯ ОСТАНОВКИ</li>
+                        <li>КЛИКНИТЕ <> ДЛЯ ПЕРЕХОДА НА GITHUB</li>
+                    </ul>
+                </div>
+                <div class="button-container">
+                    <div id="init-btn" class="button">НАЧАТЬ</div>
+                </div>
+            </div>
+            <div id="stop-popup" class="popup">
+                <div class="title">ZZZ..Z</div>
+                <div class="button-container">
+                    <div id="start-btn" class="button">НАЧАТЬ</div>
+                    <div id="reset-btn" class="button button-2">НАЧАТЬ ЗАНОВО</div>
+                </div>
+            </div>
+            <div id="final-popup" class="popup">
+                <div class="title">ПРИВЕТ !</div>
+                <div class="info">У ВАС <span id="final-score" class="num"></span> ОЧКОВ !</div>
+                <div class="button-container">
+                    <div id="restart-btn" class="button">НАЧАТЬ ЗАНОВО</div>
+                </div>
+            </div>
+            <div class="mask"></div>
+        </div>
+    </body>
 </html>
