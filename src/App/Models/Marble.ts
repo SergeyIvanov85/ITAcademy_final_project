@@ -13,9 +13,9 @@ export class Marble {
   readonly ID = `${(~~(Math.random() * 1000000000)).toString(16).toLocaleUpperCase()}`;
   readonly DOM: HTMLElement = createDiv(['marble']);
   readonly Color: string;
-  private parent: HTMLElement | null;
-  x: number;
-  y: number;
+  private parent!: HTMLElement | null;
+  x!: number;
+  y!: number;
 
   setPosition(x: number, y: number): Marble {
     this.x = x;
@@ -26,5 +26,5 @@ export class Marble {
     let r = Marble.Size - Math.sqrt((this.x - marble.x) ** 2 + (this.y - marble.y) ** 2);
     return  r;
   }
-  
+
 }
