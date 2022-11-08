@@ -13,7 +13,7 @@ export class Player {
   readonly X: number;
   readonly Y: number;
 
-  private parent: HTMLElement;
+  private parent!: HTMLElement;
   rotate: number = 0;
 
   lookAt(x: number, y: number): Player {

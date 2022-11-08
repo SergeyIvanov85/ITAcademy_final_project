@@ -16,13 +16,13 @@ body {
 .container {
   flex-shrink: 0;
   position: relative;
-  background-image: url("./image/bg.svg");
+  background-image: url("images/bg.svg");
   &::before {
     content: "";
     display: block;
     width: 1287.709px;
     height: 1004.262px;
-    background-image: url("./image/bg-leaf.svg");
+    background-image: url("images/bg-leaf.svg");
     position: absolute;
     top: -55px;
     left: -80px;
@@ -42,7 +42,7 @@ body {
   .leaf-01 {
     width: 290.296px;
     height: 197.981px;
-    background-image: url("./image/leaf-01.svg");
+    background-image: url("images/leaf-01.svg");
     transform-origin: top left;
     top: -10px;
     left: -50px;
@@ -51,7 +51,7 @@ body {
   .leaf-02 {
     width: 130.828px;
     height: 131.056px;
-    background-image: url("./image/leaf-02.svg");
+    background-image: url("images/leaf-02.svg");
     transform-origin: top right;
     top: -60px;
     right: 325px;
@@ -60,7 +60,7 @@ body {
   .leaf-03 {
     width: 214.618px;
     height: 225.252px;
-    background-image: url("./image/leaf-03.svg");
+    background-image: url("images/leaf-03.svg");
     transform-origin: top right;
     top: 60px;
     right: -60px;
@@ -69,7 +69,7 @@ body {
   .leaf-04 {
     width: 303.2px;
     height: 356.908px;
-    background-image: url("./image/leaf-04.svg");
+    background-image: url("images/leaf-04.svg");
     transform-origin: bottom left;
     bottom: -60px;
     left: 0px;
@@ -78,7 +78,7 @@ body {
   .leaf-05 {
     width: 253.153px;
     height: 292.861px;
-    background-image: url("./image/leaf-05.svg");
+    background-image: url("images/leaf-05.svg");
     transform-origin: bottom right;
     bottom: -110px;
     right: 660px;
@@ -87,7 +87,7 @@ body {
   .leaf-06 {
     width: 269.787px;
     height: 346.454px;
-    background-image: url("./image/leaf-06.svg");
+    background-image: url("images/leaf-06.svg");
     transform-origin: bottom right;
     bottom: -75px;
     right: -40px;
@@ -123,7 +123,7 @@ body {
       height: 100%;
       position: relative;
       background-size: contain;
-      background-image: url("./image/frog.svg");
+      background-image: url("images/frog.svg");
       z-index: 2;
     }
     .marble-1,
@@ -202,7 +202,7 @@ body {
     display: block;
     width: 100%;
     height: 100%;
-    background-image: url("./image/noise.png");
+    background-image: url("images/noise.png");
     position: absolute;
     opacity: 0.1;
   }

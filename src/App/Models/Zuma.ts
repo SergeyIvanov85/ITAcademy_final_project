@@ -1,4 +1,4 @@
-import { createDiv, createElement } from "../Tools/tools";
+import { createDiv, createElement, OneFrameTime } from "../Tools/tools";
 import { Player } from "./Player";
 import { Marble } from "./Marble";
 import { MarbelData } from "../Interfaces/MarbelData";
@@ -71,13 +71,13 @@ export class Zuma {
   ]);
   private readonly Path: SVGPathElement = createElement('path', {});
   private readonly PathLength: number;
-  private parent: HTMLElement;
+  private parent!: HTMLElement;
   private moveSpeed: number = 4;
   private autoAddMarbleCount = 0;
   private marbleDataList: MarbelData[] = [];
   private marbleBoomList: MarbelBoomData[] = [];
-  private marbleColorCount = {};
-  private time: number;
+  private marbleColorCount: any = {};
+  private time!: number;
   private moveTimes: number = 0;
   private colorList: string[];
   private isStart = false;
@@ -153,5 +153,368 @@ export class Zuma {
       this.marbleColorCount[color] = 0;
     });
     return this;
+  }
+
+  setScale(scale: number): Zuma {
+    this.Container.style.transform = `scale(${scale || 1})`;
+    return this;
+  }
+
+  destroy(): void {
+    this.reset();
+    if (this.parent) {
+      this.parent.removeChild(this.Container)
+    }
+    // this.windowEventList.forEach(d => {
+    //   window.removeEventListener(d.name, d.fn);
+    // });
+    // this.windowEventList = [];
+  }
+
+  appendTo(parent: HTMLElement): Zuma {
+    this.parent = parent;
+    this.parent.appendChild(this.Container);
+    return  this;
+  }
+
+  switchMarble(): Zuma {
+    if (!this.isStart || this.isFinal || !this.isInit) {
+      return this;
+    }
+    if (this.Player && this.playerMarble.now && this.playerMarble.next) {
+      [this.playerMarble.now, this.playerMarble.next] = [this.playerMarble.next, this.playerMarble.now];
+      this.Player
+        .setMarbleColor(this.playerMarble.now.Color)
+        .setNextMarbleColor(this.playerMarble.next.Color);
+    }
+    return this;
+  }
+
+  attack(): Zuma {
+    if (
+      !this.isStart || this.isFinal || !this.isInit ||
+      !this.Player || !this.playerMarble.now || !this.playerMarble.next
+    ) {
+      return this;
+    }
+    const vector = this.Player.getVector();
+    this.marbleBoomList.push({
+      marble: this.playerMarble.now,
+      speed: vector
+    });
+    this.playerMarble.now.setPosition(this.Player.X, this.Player.Y);
+    this.playerMarble.now = this.playerMarble.next;
+    this.playerMarble.next = this.createMarble();
+    this.Player
+      .setMarbleColor(this.playerMarble.now.Color)
+      .setNextMarbleColor(this.playerMarble.next.Color);
+    return this;
+  }
+
+  lookAt(x: number, y: number): Zuma {
+    if (!this.Player) {
+      return this;
+    }
+    this.Player.lookAt(x, y);
+    return this;
+  }
+
+  lookAtVector(x: number, y: number): Zuma {
+    if (!this.Player) {
+      return this;
+    }
+    this.Player.lookAtVector(x, y);
+    return this;
+  }
+
+  getPlayerRotate(): number {
+    return this.Player.rotate;
+  }
+
+  private init(): Zuma {
+    const innerTime = new Date().getTime();
+    if (this.marbleDataList.length >= this.InitMarbleLength && this.isStart) {
+      this._isInit = true;
+      this.moveSpeed = 20;
+      this.moveTimes = this.moveSpeed;
+      this.playerMarble.now = this.createMarble();
+      this.playerMarble.next = this.createMarble();
+      this.Player
+        .setMarbleColor(this.playerMarble.now.Color)
+        .setNextMarbleColor(this.playerMarble.next.Color);
+      return this;
+    }
+    if (innerTime - this.time < OneFrameTime * 4) {
+      return this;
+    }
+
+    this.time = innerTime;
+    this.unshiftMarble();
+    return this;
+  }
+
+  private moveMoveMarbleData(): void {
+    const firstMarble = this.marbleDataList[0];
+    if (!firstMarble) {
+      return;
+    }
+    if (firstMarble.percent >= 0.99) {
+      this.score -= 1;
+      this.removeMarbleFromDataList(firstMarble.marble);
+    }
+
+    const moveNum = Marble.Size / this.moveSpeed;
+    firstMarble.percent += moveNum / this.PathLength;
+    const pos = this.Path.getPointAtLength(
+      firstMarble.percent * this.PathLength
+    );
+    firstMarble.marble.setPosition(pos.x, pos.y);
+
+    let prevMarble: MarbelData = firstMarble;
+    const deleteList: Marble[] = [];
+    for (let i = 1; i < this.marbleDataList.length; i++) {
+      const marbleData = this.marbleDataList[i];
+      if (marbleData.percent >= 0.99) {
+        this.score -= 1;
+        this.removeMarbleFromDataList(marbleData.marble, i);
+        continue;
+      }
+      const overlap = prevMarble.marble.overlap(marbleData.marble);
+      if (overlap > 0 || prevMarble.percent > marbleData.percent) {
+        if (this.checkDeleteAfterTouchData[marbleData.marble.ID]) {
+          delete this.checkDeleteAfterTouchData[marbleData.marble.ID];
+          if (marbleData.marble.Color === prevMarble.marble.Color) {
+            const list = this.getNeerSameMarble(marbleData.marble);
+            if (list.length >= 3) {
+              deleteList.push(...list);
+            }
+          }
+        }
+        if (prevMarble.percent > marbleData.percent) {
+          marbleData.percent = prevMarble.percent + Marble.Size / this.PathLength;
+        } else {
+          marbleData.percent += overlap / this.PathLength;
+        }
+      } else if (overlap < -5 && marbleData.percent > prevMarble.percent) {
+        if (overlap < -Marble.Size) {
+          this.checkDeleteAfterTouchData[marbleData.marble.ID] = true;
+        }
+        const moveNum = (Marble.Size / this.moveSpeed) * 4;
+        marbleData.percent -= moveNum / this.PathLength;
+      }
+      const pos = this.Path.getPointAtLength(
+        marbleData.percent * this.PathLength
+      );
+      marbleData.marble.setPosition(pos.x, pos.y);
+      prevMarble = marbleData;
+    }
+    deleteList.forEach(marble => {
+      this.score += 3;
+      this.removeMarbleFromDataList(marble);
+    });
+  }
+
+  private moveMoveMarbleBoom(): void {
+    if (!this.marbleBoomList.length) {
+      return;
+    }
+    const marbleDataList = this.marbleDataList;
+    const deleteData: (MarbelBoomData & { isMove: boolean; })[] = [];
+    this.marbleBoomList.forEach(data => {
+      data.marble.setPosition(
+        data.marble.x + data.speed.x,
+        data.marble.y + data.speed.y
+      );
+      for (let i = 0; i < marbleDataList.length; i++) {
+        const marbleData = marbleDataList[i];
+        const overlap = data.marble.overlap(marbleData.marble);
+        if (overlap > 5) {
+          if (data.marble.Color === marbleData.marble.Color) {
+            const sameList = this.getNeerSameMarble(marbleData.marble);
+            if (sameList.length >= 2) {
+              this.score += sameList.length;
+              sameList.forEach(marble => {
+                this.removeMarbleFromDataList(marble);
+              });
+              deleteData.push({ ...data, isMove: false });
+              return;
+            }
+          }
+          this.addMarbleToNeer(data.marble, marbleData);
+          deleteData.push({ ...data, isMove: true });
+          return;
+        }
+      }
+      if (Math.abs(data.marble.x) > this.width || Math.abs(data.marble.y) > this.height) {
+        deleteData.push({ ...data, isMove: false });
+      }
+    });
+    deleteData.forEach((date) => {
+      const index = this.marbleBoomList.findIndex(d => d.marble.ID === date.marble.ID);
+      this.marbleBoomList.splice(index, 1);
+      if (!date.isMove) {
+        this.marbleColorCount[date.marble.Color]--;
+      }
+    });
+  }
+
+  private removeMarbleFromDataList(
+    marble: Marble,
+    index = this.marbleDataList.findIndex(d => d.marble.ID === marble.ID)
+  ): Zuma {
+    delete this.checkDeleteAfterTouchData[marble.ID];
+    this.marbleDataList.splice(index, 1);
+    this.marbleColorCount[marble.Color]--;
+    return this;
+  }
+
+  private addMarbleToNeer(marble: Marble, target: MarbelData): Zuma {
+    const index = this.marbleDataList.findIndex(d => d.marble.ID === target.marble.ID);
+    const oneMarblePercent = Marble.Size / this.PathLength;
+    const prevPos = this.Path.getPointAtLength(
+      (target.percent - oneMarblePercent) * this.PathLength
+    );
+    const nextPos = this.Path.getPointAtLength(
+      (target.percent + oneMarblePercent) * this.PathLength
+    );
+    const prevGap = (prevPos.x - marble.x) ** 2 + (prevPos.y - marble.y) ** 2;
+    const nextGap = (nextPos.x - marble.x) ** 2 + (nextPos.y - marble.y) ** 2;
+    if (prevGap < nextGap) {
+      this.marbleDataList.splice(index, 0, {
+        marble,
+        percent: target.percent - oneMarblePercent / 2
+      });
+    } else {
+      this.marbleDataList.splice(index + 1, 0, {
+        marble,
+        percent: target.percent + oneMarblePercent / 2
+      });
+    }
+    return this;
+  }
+
+  private createMarble(): Marble {
+    const marble = new Marble({ color: this.getColor() });
+    this.marbleColorCount[marble.Color]++;
+    return marble;
+  }
+
+  private unshiftMarble(): Zuma {
+    const marble = this.createMarble();
+    this.marbleDataList.unshift({
+      marble,
+      percent: 0,
+    });
+    this.autoAddMarbleCount++;
+    return this;
+  }
+
+  private getColor(): string {
+    const index = ~~(Math.random() * this.colorList.length);
+    const color = this.colorList[index];
+    if (this.marbleColorCount[color] || this.colorList.length === 1 || !this.isInit) {
+      return color;
+    }
+    this.colorList.splice(index, 1);
+    return this.getColor();
+  }
+
+  private getNeerSameMarble(marble: Marble): Marble[] {
+    let checkMarble: Marble;
+    const index = this.marbleDataList.findIndex(
+      (ele) => ele.marble.ID === marble.ID
+    );
+    const neerList: Marble[] = [marble];
+    checkMarble = marble;
+    for (let i = index + 1; i < this.marbleDataList.length; i++) {
+      const nowMarble = this.marbleDataList[i].marble;
+      if (
+        nowMarble.Color === checkMarble.Color &&
+        nowMarble.overlap(checkMarble) > (Marble.Size / -10)
+      ) {
+        checkMarble = nowMarble;
+        neerList.push(nowMarble);
+      } else {
+        break;
+      }
+    }
+    checkMarble = marble;
+    for (let i = index - 1; i >= 0; i--) {
+      const nowMarble = this.marbleDataList[i].marble;
+      if (
+        nowMarble.Color === checkMarble.Color &&
+        nowMarble.overlap(checkMarble) > (Marble.Size / -10)
+      ) {
+        checkMarble = nowMarble;
+        neerList.push(nowMarble);
+      } else {
+        break;
+      }
+    }
+    return neerList;
+  }
+
+  private drawCanvas(): void {
+    const ctx = this.Canvas.getContext('2d');
+    const r = Marble.Size / 2 * window.devicePixelRatio;
+    const PI2 = 2 * Math.PI;
+    ctx!.clearRect(0, 0, this.Canvas.width, this.Canvas.height);
+    this.marbleDataList.forEach(marble => {
+      ctx!.beginPath();
+      ctx!.fillStyle = marble.marble.Color;
+      ctx!.arc(
+        marble.marble.x * window.devicePixelRatio,
+        marble.marble.y * window.devicePixelRatio,
+        r,
+        0,
+        PI2
+      );
+      ctx!.closePath();
+      ctx!.fill()
+    });
+    this.marbleBoomList.forEach(marble => {
+      ctx!.beginPath();
+      ctx!.fillStyle = marble.marble.Color;
+      ctx!.arc(
+        marble.marble.x * window.devicePixelRatio,
+        marble.marble.y * window.devicePixelRatio,
+        r,
+        0,
+        PI2
+      );
+      ctx!.closePath();
+      ctx!.fill();
+    });
+  }
+
+  private animation(): void {
+    if (!this.isStart) {
+      return;
+    }
+    requestAnimationFrame(() => this.animation());
+    if (!this.isInit) {
+      this.init().moveMoveMarbleData();
+      this.drawCanvas();
+      return;
+    }
+    const innerTime = new Date().getTime();
+    if (innerTime - this.time < OneFrameTime) {
+      return;
+    }
+    this.time = innerTime;
+    if (
+      this.moveTimes === this.moveSpeed &&
+      this.autoAddMarbleCount < this.AllMarbleLength
+    ) {
+      this.unshiftMarble();
+      this.moveTimes = 0;
+    }
+    this.moveMoveMarbleBoom();
+    this.moveMoveMarbleData();
+    this.drawCanvas();
+    this.moveTimes++;
+    if (this.marbleDataList.length === 0) {
+      this.isFinal = true;
+    }
   }
 }

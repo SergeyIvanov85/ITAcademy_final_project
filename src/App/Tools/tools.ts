@@ -14,7 +14,7 @@ export const createDiv: (
 
 export const createElement: (name: string, attr: {[key: string]: any}) => any = (
   name, attr) => {
-  const xmlns = 'http://www.w3.org/TR/SVG';
+  const xmlns = 'http://www.w3.org/2000/svg';
   const  element = document.createElementNS(xmlns, name);
   Object.keys(attr).forEach((key) => {
     element.setAttributeNS(null, key, attr[key]);
