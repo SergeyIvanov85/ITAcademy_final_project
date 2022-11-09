@@ -52,7 +52,7 @@ export class Zuma {
     this.updateFinal = data.updateFinal;
   }
 
-  static readonly DefaultColorList = ["#0C3406", "#077187", "#74A57F", "#ABD8CE", "#E4C5AF"];
+  static readonly DefaultColorList = ["#0C3406", "#077187", "#74A57F", "#ABD8CE", "#E4C5AF", "#ED1111", "#11EDE2"];
   readonly width: number;
   readonly height: number;
   private readonly updateScore: undefined | ((score: number) => void);
@@ -121,9 +121,6 @@ export class Zuma {
   start(): Zuma {
     this.isStart = true;
     this.time = new Date().getTime();
-    // if (!this.windowEventList.length) {
-    //   this.bindEvent();
-    // }
     this.animation();
     return this
   }
