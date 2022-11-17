@@ -20,6 +20,7 @@ export class ZumaView {
                 playerPos: { x: 550, y: 400 },
                 updateScore: (score: number) => {
                     scoreDOM.innerHTML = `${score}`;
+                    localStorage.setItem('player', String(score))
                 },
                 updateFinal: (isFinal: boolean) => {
                     if (isFinal) {
@@ -31,26 +32,28 @@ export class ZumaView {
 
             zumaGame.appendTo(document.body);
 
+            console.log(zumaGame);
+
             window.addEventListener('keydown', (e) => {
                 if (e.code === 'Escape' && zumaGame.isInit) {
                     zumaGame.stop();
                     stopPopup.classList.add('active');
                 }
             });
-            window.addEventListener('keydown', (e: KeyboardEvent) => {
+            window.addEventListener('keydown', (e) => {
                 if (!zumaGame && e.code !== 'Space') {
                     return;
                 }
                 e.preventDefault();
                 zumaGame.switchMarble();
             });
-            window.addEventListener('mousemove', (e: MouseEvent) => {
+            window.addEventListener('mousemove', (e) => {
                 if (!zumaGame) {
                     return;
                 }
                 zumaGame.lookAt(e.pageX, e.pageY);
             });
-            window.addEventListener('click', (e: MouseEvent) => {
+            window.addEventListener('click', () => {
                 zumaGame.attack();
             });
 
@@ -85,7 +88,7 @@ export class ZumaView {
             window.addEventListener('resize', resize);
             resize();
 
-            window.addEventListener('blur', function (e) {
+            window.addEventListener('blur', function () {
                 if (zumaGame.isInit && !zumaGame.isFinal) {
                     zumaGame.stop();
                     stopPopup.classList.add('active');

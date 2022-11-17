@@ -158,13 +158,6 @@ export class Zuma {
         return this;
     }
 
-    // destroy(): void {
-    //     this.reset();
-    //     if (this.parent) {
-    //         this.parent.removeChild(this.Container);
-    //     }
-    // }
-
     appendTo(parent: HTMLElement): Zuma {
         this.parent = parent;
         this.parent.appendChild(this.Container);
@@ -213,23 +206,11 @@ export class Zuma {
         return this;
     }
 
-    // lookAtVector(x: number, y: number): Zuma {
-    //     if (!this.Player) {
-    //         return this;
-    //     }
-    //     this.Player.lookAtVector(x, y);
-    //     return this;
-    // }
-
-    // getPlayerRotate(): number {
-    //     return this.Player.rotate;
-    // }
-
     private init(): Zuma {
         const innerTime = new Date().getTime();
         if (this.marbleDataList.length >= this.InitMarbleLength && this.isStart) {
             this._isInit = true;
-            this.moveSpeed = 20;
+            this.moveSpeed = 30;
             this.moveTimes = this.moveSpeed;
             this.playerMarble.now = this.createMarble();
             this.playerMarble.next = this.createMarble();
