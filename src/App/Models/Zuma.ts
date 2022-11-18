@@ -75,7 +75,7 @@ export class Zuma {
     private readonly Path: SVGPathElement = createElement('path', {});
     private readonly PathLength: number;
     private parent!: HTMLElement;
-    private moveSpeed: number = 4;
+    private moveSpeed: number = 3;
     private autoAddMarbleCount = 0;
     private marbleDataList: MarbleData[] = [];
     private marbleBoomList: MarbleBoomData[] = [];
@@ -372,7 +372,7 @@ export class Zuma {
     }
 
     private getColor(): string {
-        const index = ~~(Math.random() * this.colorList.length);
+        const index = Math.floor(Math.random() * this.colorList.length);
         const color = this.colorList[index];
         if (this.marbleColorCount[color] || this.colorList.length === 1 || !this.isInit) {
             return color;

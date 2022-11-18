@@ -32,7 +32,6 @@ export class ZumaView {
 
             zumaGame.appendTo(document.body);
 
-            console.log(zumaGame);
 
             window.addEventListener('keydown', (e) => {
                 if (e.code === 'Escape' && zumaGame.isInit) {
@@ -57,25 +56,25 @@ export class ZumaView {
                 zumaGame.attack();
             });
 
-            // @ts-ignore
-            startPopup.querySelector('#init-btn').addEventListener('click', () => {
+
+            startPopup.querySelector('#init-btn')!.addEventListener('click', () => {
                 startPopup.classList.remove('active');
                 zumaGame.start();
             });
-            // @ts-ignore
-            stopPopup.querySelector('#start-btn').addEventListener('click', () => {
+
+            stopPopup.querySelector('#start-btn')!.addEventListener('click', () => {
                 stopPopup.classList.remove('active');
                 setTimeout(() => {
                     zumaGame.start();
                 }, 100);
             });
-            // @ts-ignore
-            stopPopup.querySelector('#reset-btn').addEventListener('click', () => {
+
+            stopPopup.querySelector('#reset-btn')!.addEventListener('click', () => {
                 stopPopup.classList.remove('active');
                 zumaGame.reset().start();
             });
-            // @ts-ignore
-            finalPopup.querySelector('#restart-btn').addEventListener('click', () => {
+
+            finalPopup.querySelector('#restart-btn')!.addEventListener('click', () => {
                 finalPopup.classList.remove('active');
                 zumaGame.reset().start();
             });

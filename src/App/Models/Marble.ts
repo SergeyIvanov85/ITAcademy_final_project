@@ -9,7 +9,7 @@ export class Marble {
     }
 
     static readonly Size = 60;
-    readonly ID = `${(~~(Math.random() * 1000000000)).toString(16).toLocaleUpperCase()}`;
+    readonly ID = `${(Math.floor(Math.random() * 1000000000)).toString(16).toLocaleUpperCase()}`;
     readonly DOM: HTMLElement = createDiv(['marble']);
     readonly Color: string;
     x!: number;
